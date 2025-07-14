@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ダンスレッスン応募フォーム</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom font for a clean look */
+        body {
+            font-family: "Inter", sans-serif;
+            background-color: #f3f4f6; /* Light gray background */
+        }
+        /* Focus styles for inputs */
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5); /* Blue glow */
+            border-color: #4299e1; /* Blue border */
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-2xl">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">ダンスレッスン応募フォーム</h1>
+        <p class="text-gray-600 mb-8 text-center">以下のフォームに必要事項をご記入の上、ご応募ください。</p>
+
+        <!-- Formspreeと連携するための変更点 -->
+        <!-- action属性にあなたのFormspreeエンドポイントURLを設定してください -->
+        <!-- onsubmitハンドラはFormspreeが直接処理するため削除しました -->
+        <form id="applicationForm" class="space-y-6" action="https://formspree.io/f/mnnzagpb" method="POST">
+            <!-- 氏名 -->
+            <div>
+                <label for="fullName" class="block text-sm font-medium text-gray-700 mb-1">氏名 <span class="text-red-500">*</span></label>
+                <input type="text" id="fullName" name="fullName" placeholder="例: 山田 太郎" required
+                       class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            </div>
+
+            <!-- フリガナ -->
+            <div>
+                <label for="furigana" class="block text-sm font-medium text-gray-700 mb-1">フリガナ <span class="text-red-500">*</span></label>
+                <input type="text" id="furigana" name="furigana" placeholder="例: ヤマダ タロウ" required
+                       class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            </div>
+
+            <!-- メールアドレス -->
+            <div>
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">メールアドレス <span class="text-red-500">*</span></label>
+                <input type="email" id="email" name="email" placeholder="例: example@example.com" required
+                       class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            </div>
+
+            <!-- 電話番号 -->
+            <div>
+                <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">電話番号</label>
+                <input type="tel" id="phone" name="phone" placeholder="例: 090-1234-5678"
+                       class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            </div>
+
+            <!-- 受けたいレッスンジャンル (ドロップダウン) -->
+            <div>
+                <label for="lessonGenre" class="block text-sm font-medium text-gray-700 mb-1">受けたいレッスンジャンル <span class="text-red-500">*</span></label>
+                <select id="lessonGenre" name="lessonGenre" required
+                        class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                        onchange="updateClassLevelAndScheduleOptions()">
+                    <option value="">選択してください</option>
+                    <option value="aerial_stretch">エアリアルストレッチ</option>
+                    <option value="pilates">ピラティス</option>
+                    <option value="stretch_pole">ストレッチポール</option>
+                    <option value="adult_ballet">大人から始めるクラシックバレエ</option>
+                    <option value="stretch_muscle">ストレッチ筋トレ</option>
+                    <option value="belly_dance_intro">基礎が学べるベリーダンス入門</option>
+                    <option value="fusion_belly_dance">フュージョンベリーダンス</option>
+                    <option value="adult_hiphop_beginner">大人HIPHOPダンス初級</option>
+                    <option value="adult_kpop_dance">大人から始めるK-POPダンス</option>
+                    <option value="kids_ballet_nagisa">3才~小中高生 クラシックバレエ Nagisa先生</option>
+                    <option value="kids_ballet_yumi">3才~小中高生 クラシックバレエ Yumi先生</option>
+                    <option value="other">その他</option>
+                </select>
+            </div>
+
+            <!-- クラスレベル (動的に表示/非表示) -->
+            <div id="classLevelContainer" class="hidden">
+                <label for="classLevel" class="block text-sm font-medium text-gray-700 mb-1">クラスレベル <span class="text-red-500">*</span></label>
+                <select id="classLevel" name="classLevel"
+                        class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                        onchange="updateScheduleOptions()">
+                    <!-- Options will be populated by JavaScript -->
+                </select>
+            </div>
+
+            <!-- クラススケジュールの日程・時間選択 (カレンダー + ドロップダウン) -->
+            <div id="classScheduleDateTimeContainer" class="hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="classDate" class="block text-sm font-medium text-gray-700 mb-1">希望日程 <span class="text-red-500">*</span></label>
+                        <input type="date" id="classDate" name="classDate"
+                               class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                               onchange="validateClassDate()">
+                        <p id="classDateHint" class="mt-1 text-xs text-gray-500"></p>
+                    </div>
+                    <div>
+                        <label for="classTime" class="block text-sm font-medium text-gray-700 mb-1">希望時間 <span class="text-red-500">*</span></label>
+                        <select id="classTime" name="classTime"
+                                class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            <option value="">選択してください</option>
+                            <!-- Times will be populated by JavaScript -->
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 希望日程・時間 (上記で指定がない場合のみ表示) -->
+            <div id="generalDateTimeContainer">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="preferredDate" class="block text-sm font-medium text-gray-700 mb-1">希望日程</label>
+                        <input type="date" id="preferredDate" name="preferredDate"
+                               class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    <div>
+                        <label for="preferredTime" class="block text-sm font-medium text-gray-700 mb-1">希望時間</label>
+                        <input type="time" id="preferredTime" name="preferredTime"
+                               class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                </div>
+                <p class="mt-1 text-xs text-gray-500">※特定のクラス日時を選ばない場合にご記入ください。後日、調整のご連絡を差し上げます。</p>
+            </div>
+
+            <!-- 受けたいレッスン内容 (テキストエリア) -->
+            <div>
+                <label for="lessonDetails" class="block text-sm font-medium text-gray-700 mb-1">受けたいレッスン内容（具体的に）</label>
+                <textarea id="lessonDetails" name="lessonDetails" rows="4" placeholder="例: 初心者向けのヒップホップ、基礎からしっかり学びたい、特定の曲の振付を習いたいなど"
+                          class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+            </div>
+
+            <!-- プライバシーポリシー同意チェックボックス -->
+            <div class="flex items-center">
+                <input id="privacyPolicy" name="privacyPolicy" type="checkbox" required
+                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                <label for="privacyPolicy" class="ml-2 block text-sm text-gray-900">
+                    <a href="#" class="text-blue-600 hover:underline" onclick="showPrivacyPolicy(event)">プライバシーポリシー</a>に同意します <span class="text-red-500">*</span>
+                </label>
+            </div>
+
+            <!-- 送信ボタン -->
+            <div>
+                <button type="submit"
+                        class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
+                    応募する
+                </button>
+            </div>
+        </form>
+
+        <!-- プライバシーポリシーモーダル -->
+        <div id="privacyPolicyModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white p-6 rounded-lg shadow-xl max-w-lg w-full max-h-[80vh] overflow-y-auto">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">プライバシーポリシー</h2>
+                <p class="text-gray-700 mb-4">
+                    当スタジオは、お客様からご提供いただく個人情報（氏名、フリガナ、メールアドレス、電話番号、希望レッスンジャンル、希望レッスン内容、希望日程・時間など）を、以下の目的のために利用いたします。
+                </p>
+                <ul class="list-disc list-inside text-gray-700 mb-4 space-y-2">
+                    <li>ダンスレッスンの応募受付、およびお客様へのご連絡のため</li>
+                    <li>体験レッスンや入会に関するご案内、日程調整のため</li>
+                    <li>お客様の希望に沿ったレッスン内容やクラスを提案するため</li>
+                    <li>サービス向上、および統計分析のため</li>
+                </ul>
+                <p class="text-gray-700 mb-4">
+                    ご提供いただいた個人情報は、法令に基づく場合、またはお客様の同意がある場合を除き、第三者に開示することはありません。
+                    また、個人情報の管理にあたっては、漏洩、滅失または毀損の防止、その他個人情報の安全管理のために必要かつ適切な措置を講じます。
+                </p>
+                <p class="text-gray-700 mb-6">
+                    ご自身の個人情報について、開示、訂正、利用停止等のご請求があった場合には、ご本人であることを確認の上、適切に対応いたします。
+                </p>
+                <button onclick="hidePrivacyPolicy()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">閉じる</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ジャンルごとのクラスレベル定義
+        const classLevels = {
+            "aerial_stretch": [
+                { value: "beginner", text: "入門" },
+                { value: "elementary", text: "初級" },
+                { value: "intermediate", text: "中級" }
+            ],
+            "kids_ballet_nagisa": [ // 3才~小中高生 クラシックバレエ Nagisa先生
+                { value: "beginner", text: "入門" },
+                { value: "elementary", text: "初級" },
+                { value: "intermediate", text: "中級" },
+                { value: "free_enrollment", text: "フリー受講専用" }
+            ],
+            "kids_ballet_yumi": [ // 3才~小中高生 クラシックバレエ Yumi先生
+                { value: "beginner", text: "入門" },
+                { value: "elementary", text: "初級" },
+                { value: "intermediate", text: "中級" },
+                { value: "free_enrollment", text: "フリー受講専用" }
+            ],
+            "kids_kpop_dance": [ // 4才~小中高生 K-POPダンス
+                { value: "beginner", text: "入門" },
+                { value: "elementary", text: "初級" },
+                { value: "intermediate", text: "中級" }
+            ]
+        };
+
+        // ジャンルとクラスレベルごとのスケジュール定義
+        // dayOfWeek: 0=日, 1=月, 2=火, 3=水, 4=木, 5=金, 6=土
+        const lessonSchedules = {
+            "aerial_stretch": {
+                "beginner": [
+                    { dayOfWeek: 1, times: ["11:25 - 12:10", "20:50 - 21:35"] }, // 月曜日
+                    { dayOfWeek: 5, times: ["19:15 - 20:00"] }  // 金曜日
+                ],
+                "elementary": [
+                    { dayOfWeek: 1, times: ["10:40 - 11:10", "19:20 - 19:50"] }, // 月曜日
+                    { dayOfWeek: 6, times: ["17:40 - 18:10"] }  // 土曜日
+                ],
+                "intermediate": [
+                    { dayOfWeek: 1, times: ["20:00 - 20:35"] }  // 月曜日
+                ]
+            },
+            "pilates": [ // ピラティスはクラスレベルなしで、固定の曜日・時間
+                { dayOfWeek: 5, times: ["11:00 - 11:45"] }  // 金曜日
+            ],
+            "stretch_pole": [ // ストレッチポールはクラスレベルなしで、固定の曜日・時間
+                { dayOfWeek: 3, times: ["10:00 - 10:30"] }, // 水曜日
+                { dayOfWeek: 5, times: ["20:10 - 20:30"] }  // 金曜日
+            ],
+            "adult_ballet": [ // 大人から始めるクラシックバレエはクラスレベルなしで、固定の曜日・時間
+                { dayOfWeek: 3, times: ["10:40 - 12:05"] }, // 水曜日
+                { dayOfWeek: 5, times: ["20:30 - 21:45"] }  // 金曜日
+            ],
+            "stretch_muscle": [ // ストレッチ筋トレはクラスレベルなしで、固定の曜日・時間
+                { dayOfWeek: 3, times: ["10:40 - 11:25"] }, // 水曜日
+                { dayOfWeek: 5, times: ["20:30 - 21:15"] }  // 金曜日
+            ],
+            "belly_dance_intro": [ // 基礎が学べるベリーダンス入門はクラスレベルなしで、固定の曜日・時間
+                { dayOfWeek: 0, times: ["14:00 - 15:00"] }  // 日曜日
+            ],
+            "fusion_belly_dance": [ // フュージョンベリーダンスはクラスレベルなしで、固定の曜日・時間
+                { dayOfWeek: 1, times: ["16:45 - 18:15", "19:00 - 20:30"] } // 月曜日
+            ],
+            "adult_hiphop_beginner": [ // 大人HIPHOPダンス初級はクラスレベルなしで、固定の曜日・時間
+                { dayOfWeek: 2, times: ["20:40 - 21:40"] } // 火曜日
+            ],
+            "adult_kpop_dance": [ // 大人から始めるK-POPダンスはクラスレベルなしで、固定の曜日・時間
+                { dayOfWeek: 4, times: ["10:00 - 11:10", "20:45 - 21:55"] } // 木曜日
+            ],
+            "kids_ballet_nagisa": { // 3才~小中高生 クラシックバレエ Nagisa先生
+                "beginner": [
+                    { dayOfWeek: 4, times: ["18:00 - 18:40"] }, // 木曜日
+                    { dayOfWeek: 6, times: ["13:00 - 14:00"] }  // 土曜日
+                ],
+                "elementary": [
+                    { dayOfWeek: 4, times: ["18:00 - 19:00"] }, // 木曜日
+                    { dayOfWeek: 6, times: ["13:00 - 14:00"] }  // 土曜日
+                ],
+                "intermediate": [
+                    { dayOfWeek: 6, times: ["14:00 - 15:30"] }  // 土曜日
+                ],
+                "free_enrollment": [
+                    { dayOfWeek: 6, times: ["15:30 - 16:00"] }  // 土曜日
+                ]
+            },
+            "kids_ballet_yumi": { // 3才~小中高生 クラシックバレエ Yumi先生
+                "beginner": [
+                    { dayOfWeek: 2, times: ["17:00 - 17:40"] }, // 火曜日
+                    { dayOfWeek: 3, times: ["17:30 - 18:10"] }  // 水曜日
+                ],
+                "elementary": [
+                    { dayOfWeek: 2, times: ["18:00 - 19:00"] }, // 火曜日
+                    { dayOfWeek: 3, times: ["17:30 - 18:30"] }  // 水曜日
+                ],
+                "intermediate": [
+                    { dayOfWeek: 2, times: ["19:00 - 20:30"] }, // 火曜日
+                    { dayOfWeek: 3, times: ["18:30 - 20:00"] }  // 水曜日
+                ],
+                "free_enrollment": [
+                    // フリー受講専用の時間が指定されていないため、このクラスを選択した場合は一般日時入力が表示されます。
+                    // 必要であればここに時間を追加してください。
+                ]
+            },
+            "kids_kpop_dance": { // 4才~小中高生 K-POPダンス
+                "beginner": [
+                    { dayOfWeek: 5, times: ["18:00 - 18:40"] }, // 金曜日
+                    { dayOfWeek: 6, times: ["10:00 - 10:40"] }  // 土曜日
+                ],
+                "elementary": [
+                    { dayOfWeek: 5, times: ["18:00 - 19:00"] }  // 金曜日
+                ],
+                "intermediate": [
+                    { dayOfWeek: 6, times: ["16:00 - 17:30"] }  // 土曜日
+                ]
+            }
+        };
+
+        // 複数の許可された曜日の中から、最も早い次の日付を取得する関数
+        function getEarliestUpcomingValidDate(allowedDayOfWeeks) {
+            let earliestDate = null;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            allowedDayOfWeeks.forEach(targetDayOfWeek => {
+                let d = new Date(today);
+                const day = d.getDay();
+                let diff = targetDayOfWeek - day;
+                if (diff < 0) { // 今日が指定曜日か、既に過ぎている場合
+                    diff += 7;
+                }
+                d.setDate(d.getDate() + diff);
+
+                if (earliestDate === null || d < earliestDate) {
+                    earliestDate = d;
+                }
+            });
+            return earliestDate ? earliestDate.toISOString().split('T')[0] : null;
+        }
+
+
+        // クラスレベルとスケジュールオプションを更新する関数（ジャンル変更時）
+        function updateClassLevelAndScheduleOptions() {
+            const lessonGenreSelect = document.getElementById('lessonGenre');
+            const classLevelContainer = document.getElementById('classLevelContainer');
+            const classLevelSelect = document.getElementById('classLevel');
+            const selectedGenre = lessonGenreSelect.value;
+
+            // クラスレベルの選択肢をクリア
+            classLevelSelect.innerHTML = '';
+
+            // 特定のジャンルが選択され、かつそのジャンルにクラスレベルが定義されている場合
+            if (selectedGenre && classLevels[selectedGenre]) {
+                classLevelContainer.classList.remove('hidden'); // クラスレベルコンテナを表示
+                classLevelSelect.setAttribute('required', 'required'); // 必須にする
+
+                // デフォルトの「選択してください」オプションを追加
+                let defaultOption = document.createElement('option');
+                defaultOption.value = "";
+                defaultOption.text = "クラスレベルを選択してください";
+                classLevelSelect.appendChild(defaultOption);
+
+                // 選択されたジャンルのクラスレベルオプションを追加
+                classLevels[selectedGenre].forEach(level => {
+                    let option = document.createElement('option');
+                    option.value = level.value;
+                    option.text = level.text;
+                    classLevelSelect.appendChild(option);
+                });
+            } else {
+                classLevelContainer.classList.add('hidden'); // クラスレベルコンテナを非表示
+                classLevelSelect.removeAttribute('required'); // 必須を解除
+            }
+
+            // ジャンルが変更されたら、スケジュールもリセット/更新
+            updateScheduleOptions();
+        }
+
+        // スケジュールオプションを更新する関数（クラスレベル変更時、またはジャンル変更時）
+        function updateScheduleOptions() {
+            const lessonGenreSelect = document.getElementById('lessonGenre');
+            const classLevelSelect = document.getElementById('classLevel');
+            const classScheduleDateTimeContainer = document.getElementById('classScheduleDateTimeContainer');
+            const classDateInput = document.getElementById('classDate');
+            const classTimeSelect = document.getElementById('classTime');
+            const classDateHint = document.getElementById('classDateHint');
+            const generalDateTimeContainer = document.getElementById('generalDateTimeContainer');
+            const preferredDateInput = document.getElementById('preferredDate');
+            const preferredTimeInput = document.getElementById('preferredTime');
+
+            const selectedGenre = lessonGenreSelect.value;
+            const selectedClassLevel = classLevelSelect.value;
+
+            // 全てのスケジュール関連コンテナを一旦非表示にし、必須属性を解除
+            classScheduleDateTimeContainer.classList.add('hidden');
+            classDateInput.removeAttribute('required');
+            classTimeSelect.removeAttribute('required');
+            generalDateTimeContainer.classList.add('hidden');
+            preferredDateInput.removeAttribute('required');
+            preferredTimeInput.removeAttribute('required');
+
+            // 入力値をクリア
+            classDateInput.value = '';
+            classTimeSelect.innerHTML = '<option value="">選択してください</option>';
+            classDateHint.textContent = ''; // ヒントもクリア
+
+            let currentScheduleData = null;
+
+            // 特定のジャンルが選択され、かつそのジャンルにクラスレベルが定義されている場合
+            if (selectedGenre && classLevels[selectedGenre] && selectedClassLevel) {
+                currentScheduleData = lessonSchedules[selectedGenre] ? lessonSchedules[selectedGenre][selectedClassLevel] : null;
+            }
+            // クラスレベルがないジャンルで、直接スケジュールが定義されている場合
+            else if (selectedGenre && !classLevels[selectedGenre] && lessonSchedules[selectedGenre]) {
+                currentScheduleData = lessonSchedules[selectedGenre];
+            }
+
+            if (currentScheduleData && currentScheduleData.length > 0) {
+                classScheduleDateTimeContainer.classList.remove('hidden'); // 共通の日程・時間コンテナを表示
+                classDateInput.setAttribute('required', 'required');
+                classTimeSelect.setAttribute('required', 'required');
+
+                // カレンダーの最小日付を今日に設定
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = (today.getMonth() + 1).toString().padStart(2, '0');
+                const day = today.getDate().toString().padStart(2, '0');
+                classDateInput.min = `${year}-${month}-${day}`;
+
+                // 選択可能な曜日ヒントを表示
+                const dayNames = ["日", "月", "火", "水", "木", "金", "土"];
+                const allowedDayOfWeeks = [...new Set(currentScheduleData.map(s => s.dayOfWeek))].sort((a, b) => a - b);
+                const allowedDaysText = allowedDayOfWeeks.map(dayIndex => dayNames[dayIndex]).join("、");
+                classDateHint.textContent = `※選択可能な曜日: ${allowedDaysText}曜日`;
+
+                // 日付が選択されていない状態で時間オプションをクリア
+                classTimeSelect.innerHTML = '<option value="">日付を選択してください</option>';
+
+            } else {
+                // 特定のスケジュールがない場合 (例: 「その他」が選択された場合、または「フリー受講専用」で時間が未定義の場合)
+                generalDateTimeContainer.classList.remove('hidden');
+            }
+        }
+
+        // クラスの日付入力のバリデーションと時間オプション更新
+        function validateClassDate() {
+            const classDateInput = document.getElementById('classDate');
+            const classTimeSelect = document.getElementById('classTime');
+            const lessonGenreSelect = document.getElementById('lessonGenre');
+            const classLevelSelect = document.getElementById('classLevel');
+
+            const selectedDateValue = classDateInput.value;
+            const selectedGenre = lessonGenreSelect.value;
+            const selectedClassLevel = classLevelSelect.value;
+
+            classTimeSelect.innerHTML = '<option value="">選択してください</option>'; // 時間オプションをリセット
+
+            if (selectedDateValue) {
+                const selectedDateObj = new Date(selectedDateValue);
+                const selectedDayOfWeek = selectedDateObj.getDay(); // 選択された日付の曜日
+
+                let currentScheduleData = null;
+                if (selectedGenre && classLevels[selectedGenre] && selectedClassLevel) {
+                    currentScheduleData = lessonSchedules[selectedGenre][selectedClassLevel];
+                } else if (selectedGenre && !classLevels[selectedGenre] && lessonSchedules[selectedGenre]) {
+                    currentScheduleData = lessonSchedules[selectedGenre];
+                }
+
+                if (currentScheduleData) {
+                    const allowedDaySlot = currentScheduleData.find(slot => slot.dayOfWeek === selectedDayOfWeek);
+
+                    if (allowedDaySlot) {
+                        // 選択された曜日に対応する時間帯をドロップダウンに表示
+                        allowedDaySlot.times.forEach(time => {
+                            let option = document.createElement('option');
+                            option.value = time;
+                            option.text = time;
+                            classTimeSelect.appendChild(option);
+                        });
+                    } else {
+                        // 選択された曜日が許可されていない場合
+                        showMessageBox('このクラスは選択された曜日には開催されません。');
+                        classDateInput.value = ''; // 無効な日付をクリア
+                        classTimeSelect.innerHTML = '<option value="">日付を選択してください</option>'; // 時間オプションもクリア
+                    }
+                }
+            } else {
+                classTimeSelect.innerHTML = '<option value="">日付を選択してください</option>';
+            }
+        }
+
+
+        // ページロード時に初期状態を設定
+        document.addEventListener('DOMContentLoaded', () => {
+            updateClassLevelAndScheduleOptions(); // クラスレベルとスケジュールを初期化
+        });
+
+
+        // メッセージボックスを表示する関数 (Formspreeが成功/失敗メッセージを処理するため、この関数は直接使用されません)
+        function showMessageBox(message) {
+            // Formspreeがリダイレクトまたはメッセージ表示を行うため、カスタムメッセージボックスは不要
+            // 必要であれば、Formspreeの送信結果ページをカスタマイズするか、
+            // FormspreeのAjax送信機能と連携してここにメッセージを表示するロジックを実装します。
+            console.log("メッセージボックス表示の代わりに、Formspreeが結果を処理します: " + message);
+        }
+
+        // メッセージボックスを非表示にする関数 (同上)
+        function hideMessageBox() {
+            // Formspreeが結果を処理するため、この関数は直接使用されません
+        }
+
+        // プライバシーポリシーモーダルを表示する関数
+        function showPrivacyPolicy(event) {
+            event.preventDefault(); // リンクのデフォルト動作をキャンセル
+            const privacyPolicyModal = document.getElementById('privacyPolicyModal');
+            privacyPolicyModal.classList.remove('hidden');
+        }
+
+        // プライバシーポリシーモーダルを非表示にする関数
+        function hidePrivacyPolicy() {
+            const privacyPolicyModal = document.getElementById('privacyPolicyModal');
+            privacyPolicyModal.classList.add('hidden');
+        }
+
+        // フォーム送信時の処理 (Formspreeが直接処理するため、バリデーションのみ残し、送信ロジックは削除)
+        function handleSubmit(event) {
+            // ブラウザのデフォルトのHTML5バリデーションとFormspreeの処理に任せるため、
+            // JavaScriptによるカスタムバリデーションは最小限に留めます。
+            // FormspreeはHTMLのrequired属性も尊重します。
+
+            const form = event.target;
+            const selectedGenre = document.getElementById('lessonGenre').value;
+            const selectedClassLevel = document.getElementById('classLevel').value;
+
+            // プライバシーポリシーの同意チェック
+            const privacyPolicyCheckbox = document.getElementById('privacyPolicy');
+            if (!privacyPolicyCheckbox.checked) {
+                alert('プライバシーポリシーへの同意が必要です。'); // Formspree連携のため、ここではalertを使用
+                event.preventDefault(); // 送信を中止
+                return;
+            }
+
+            // クラスレベルが表示されている場合、その選択をチェック
+            if (!document.getElementById('classLevelContainer').classList.contains('hidden')) {
+                if (!selectedClassLevel) {
+                    alert('クラスレベルを選択してください。');
+                    event.preventDefault();
+                    return;
+                }
+            }
+
+            // 特定のスケジュールの日程・時間選択が表示されている場合のチェック
+            if (!document.getElementById('classScheduleDateTimeContainer').classList.contains('hidden')) {
+                const classDate = document.getElementById('classDate').value;
+                const classTime = document.getElementById('classTime').value;
+
+                if (!classDate) {
+                    alert('希望日程を選択してください。');
+                    event.preventDefault();
+                    return;
+                }
+                if (!classTime) {
+                    alert('希望時間を選択してください。');
+                    event.preventDefault();
+                    return;
+                }
+
+                // 選択された日付がクラスの許可された曜日であるかチェック (念のため)
+                const selectedDateObj = new Date(classDate);
+                const selectedDayOfWeek = selectedDateObj.getDay();
+                let currentScheduleData = null;
+                if (selectedGenre && classLevels[selectedGenre] && selectedClassLevel) {
+                    currentScheduleData = lessonSchedules[selectedGenre][selectedClassLevel];
+                } else if (selectedGenre && !classLevels[selectedGenre] && lessonSchedules[selectedGenre]) {
+                    currentScheduleData = lessonSchedules[selectedGenre];
+                }
+
+                if (currentScheduleData) {
+                    const isDayAllowed = currentScheduleData.some(slot => slot.dayOfWeek === selectedDayOfWeek);
+                    if (!isDayAllowed) {
+                        alert('このクラスは選択された曜日には開催されません。');
+                        event.preventDefault();
+                        return;
+                    }
+                }
+            }
+            // 特定のスケジュールが選択されず、一般的な日時入力が表示されている場合のチェック
+            else if (!document.getElementById('generalDateTimeContainer').classList.contains('hidden')) {
+                const preferredDate = document.getElementById('preferredDate').value;
+                const preferredTime = document.getElementById('preferredTime').value;
+                if (!preferredDate && !preferredTime) {
+                    alert('希望日程または希望時間を入力してください。');
+                    event.preventDefault();
+                    return;
+                }
+            }
+
+            // ここまで来たら、Formspreeに送信を任せる
+            // Formspreeは送信後に独自の成功ページにリダイレクトします。
+            // または、Ajaxを使ってフォーム送信を制御することもできますが、
+            // シンプルな実装のため、今回はデフォルトのHTMLフォーム送信を利用します。
+        }
+    </script>
+</body>
+</html>
