@@ -75,6 +75,7 @@
                     <option value="adult_kpop_dance">大人から始めるK-POPダンス</option>
                     <option value="kids_ballet_nagisa">3才~小中高生 クラシックバレエ Nagisa先生</option>
                     <option value="kids_ballet_yumi">3才~小中高生 クラシックバレエ Yumi先生</option>
+                    <option value="kids_ballet_kaneto">3才~小中高生 クラシックバレエ Kaneto先生</option>
                     <option value="other">その他</option>
                 </select>
             </div>
@@ -201,6 +202,10 @@
                 { value: "beginner", text: "入門" },
                 { value: "elementary", text: "初級" },
                 { value: "intermediate", text: "中級" }
+            ],
+            "kids_ballet_kaneto": [ // 3才~小中高生 クラシックバレエ Kaneto先生
+                { value: "beginner", text: "入門" },
+                { value: "intermediate", text: "中級" }
             ]
         };
 
@@ -209,11 +214,10 @@
         const lessonSchedules = {
             "aerial_stretch": {
                 "beginner": [
-                    { dayOfWeek: 1, times: ["11:25 - 12:10", "20:50 - 21:35"] }, // 月曜日
-                    { dayOfWeek: 5, times: ["19:15 - 20:00"] }  // 金曜日
+                    { dayOfWeek: 1, times: ["11:25 - 12:10"] } // 月曜日
                 ],
                 "elementary": [
-                    { dayOfWeek: 1, times: ["10:40 - 11:10", "19:20 - 19:50"] }, // 月曜日
+                    { dayOfWeek: 1, times: ["10:40 - 11:15", "19:20 - 19:50"] }, // 月曜日
                     { dayOfWeek: 6, times: ["17:40 - 18:10"] }  // 土曜日
                 ],
                 "intermediate": [
@@ -228,57 +232,64 @@
                 { dayOfWeek: 5, times: ["20:10 - 20:30"] }  // 金曜日
             ],
             "adult_ballet": [ // 大人から始めるクラシックバレエはクラスレベルなしで、固定の曜日・時間
-                { dayOfWeek: 3, times: ["10:40 - 12:05"] }, // 水曜日
-                { dayOfWeek: 5, times: ["20:30 - 21:45"] }  // 金曜日
+                { dayOfWeek: 3, times: ["20:00 - 21:00"] }, // 水曜日 (2026.4〜 KANETO)
+                { dayOfWeek: 5, times: ["21:00 - 21:45"] }  // 金曜日
             ],
             "stretch_muscle": [ // ストレッチ筋トレはクラスレベルなしで、固定の曜日・時間
-                { dayOfWeek: 3, times: ["10:40 - 11:25"] }, // 水曜日
+                { dayOfWeek: 3, times: ["10:45 - 11:25"] }, // 水曜日
                 { dayOfWeek: 5, times: ["20:30 - 21:15"] }  // 金曜日
             ],
             "belly_dance_intro": [ // 基礎が学べるベリーダンス入門はクラスレベルなしで、固定の曜日・時間
-                { dayOfWeek: 0, times: ["14:00 - 15:00"] }  // 日曜日
+                // 現在スケジュールなし → 希望日時を自由記入
             ],
             "fusion_belly_dance": [ // フュージョンベリーダンスはクラスレベルなしで、固定の曜日・時間
-                { dayOfWeek: 1, times: ["16:45 - 18:15", "19:00 - 20:30"] } // 月曜日
+                { dayOfWeek: 1, times: ["14:00 - 15:30", "16:45 - 18:15", "18:45 - 20:15"] } // 月曜日
             ],
             "adult_hiphop_beginner": [ // 大人HIPHOPダンス初級はクラスレベルなしで、固定の曜日・時間
                 { dayOfWeek: 2, times: ["20:40 - 21:40"] } // 火曜日
             ],
             "adult_kpop_dance": [ // 大人から始めるK-POPダンスはクラスレベルなしで、固定の曜日・時間
-                { dayOfWeek: 4, times: ["10:00 - 11:10", "20:45 - 21:55"] } // 木曜日
+                { dayOfWeek: 4, times: ["10:00 - 11:10", "21:15 - 22:15"] } // 木曜日
             ],
             "kids_ballet_nagisa": { // 3才~小中高生 クラシックバレエ Nagisa先生
                 "beginner": [
                     { dayOfWeek: 4, times: ["18:00 - 18:40"] }, // 木曜日
-                    { dayOfWeek: 6, times: ["13:00 - 14:00"] }  // 土曜日
+                    { dayOfWeek: 6, times: ["13:00 - 13:40"] }  // 土曜日
                 ],
                 "elementary": [
                     { dayOfWeek: 4, times: ["18:00 - 19:00"] }, // 木曜日
                     { dayOfWeek: 6, times: ["13:00 - 14:00"] }  // 土曜日
                 ],
                 "intermediate": [
-                    { dayOfWeek: 6, times: ["14:00 - 15:30"] }  // 土曜日
+                    { dayOfWeek: 4, times: ["18:00 - 19:30"] }, // 木曜日
+                    { dayOfWeek: 6, times: ["15:00 - 16:30"] }  // 土曜日
                 ],
                 "free_enrollment": [
-                    { dayOfWeek: 6, times: ["15:30 - 16:00"] }  // 土曜日
+                    { dayOfWeek: 6, times: ["16:30 - 17:00"] }  // 土曜日
                 ]
             },
             "kids_ballet_yumi": { // 3才~小中高生 クラシックバレエ Yumi先生
                 "beginner": [
-                    { dayOfWeek: 2, times: ["17:00 - 17:40"] }, // 火曜日
-                    { dayOfWeek: 3, times: ["17:30 - 18:10"] }  // 水曜日
+                    { dayOfWeek: 2, times: ["17:00 - 17:40"] }  // 火曜日
                 ],
                 "elementary": [
-                    { dayOfWeek: 2, times: ["18:00 - 19:00"] }, // 火曜日
-                    { dayOfWeek: 3, times: ["17:30 - 18:30"] }  // 水曜日
+                    { dayOfWeek: 1, times: ["18:30 - 19:30"] }, // 月曜日
+                    { dayOfWeek: 2, times: ["18:00 - 19:00"] }  // 火曜日
                 ],
                 "intermediate": [
-                    { dayOfWeek: 2, times: ["19:00 - 20:30"] }, // 火曜日
-                    { dayOfWeek: 3, times: ["18:30 - 20:00"] }  // 水曜日
+                    { dayOfWeek: 1, times: ["18:30 - 20:00"] }, // 月曜日
+                    { dayOfWeek: 2, times: ["19:00 - 20:30"] }  // 火曜日
                 ],
                 "free_enrollment": [
                     // フリー受講専用の時間が指定されていないため、このクラスを選択した場合は一般日時入力が表示されます。
-                    // 必要であればここに時間を追加してください。
+                ]
+            },
+            "kids_ballet_kaneto": { // 3才~小中高生 クラシックバレエ Kaneto先生
+                "beginner": [
+                    { dayOfWeek: 3, times: ["17:30 - 18:10"] }  // 水曜日
+                ],
+                "intermediate": [
+                    { dayOfWeek: 3, times: ["18:20 - 19:50"] }  // 水曜日
                 ]
             },
             "kids_kpop_dance": { // 4才~小中高生 K-POPダンス
@@ -287,10 +298,12 @@
                     { dayOfWeek: 6, times: ["10:00 - 10:40"] }  // 土曜日
                 ],
                 "elementary": [
-                    { dayOfWeek: 5, times: ["18:00 - 19:00"] }  // 金曜日
+                    { dayOfWeek: 5, times: ["18:00 - 19:00"] }, // 金曜日
+                    { dayOfWeek: 6, times: ["10:00 - 11:00"] }  // 土曜日
                 ],
                 "intermediate": [
-                    { dayOfWeek: 6, times: ["16:00 - 17:30"] }  // 土曜日
+                    { dayOfWeek: 4, times: ["19:40 - 21:10"] }, // 木曜日
+                    { dayOfWeek: 5, times: ["18:00 - 19:30"] }  // 金曜日
                 ]
             }
         };
